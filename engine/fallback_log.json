@@ -1,0 +1,49 @@
+[
+  {
+    "applicant_id": "A001",
+    "original_score": 0.24344886777768182,
+    "adjusted_score": 0.24344886777768182,
+    "final_decision": false,
+    "policy_applied": "None",
+    "Income": 45000.0,
+    "Credit_Score": 567,
+    "Age": 28,
+    "Employment_Years": 3.0,
+    "Debt_to_Income": 0.45,
+    "Gender": "Female",
+    "Zip_Code": 10001,
+    "Loan_Amount": 15000.0
+  },
+  {
+    "applicant_id": "b198f99c-1047-4d43-93e3-64103f6805dc",
+    "original_score": 0.9138964519392877,
+    "adjusted_score": 0.9138964519392877,
+    "final_decision": true,
+    "policy_applied": "None (Governance Off)",
+    "Income": 78330.89778988296,
+    "Credit_Score": 734,
+    "Age": 25,
+    "Employment_Years": 0.0,
+    "Debt_to_Income": 0.1966562382812256,
+    "Gender": "Female",
+    "Zip_Code": 95193,
+    "Loan_Amount": 37201.10676829751,
+    "timestamp": "2026-04-26T23:08:25.859108"
+  },
+  {
+    "applicant_id": "b198f99c-1047-4d43-93e3-64103f6805dc",
+    "original_score": 0.9138964519392877,
+    "adjusted_score": 0.9138964519392877,
+    "final_decision": true,
+    "policy_applied": "None (Governance Off)",
+    "Income": 78330.89778988296,
+    "Credit_Score": 734,
+    "Age": 25,
+    "Employment_Years": 0.0,
+    "Debt_to_Income": 0.1966562382812256,
+    "Gender": "Female",
+    "Zip_Code": 95193,
+    "Loan_Amount": 37201.10676829751,
+    "timestamp": "2026-04-26T23:08:32.311486"
+  }
+]

@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+/* ─── Light Theme (default) ─── */
+:root {
+  --bg-body: #f8f8fa;
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #f3f3f6;
+  --bg-surface-hover: #f0f0f3;
+  --bg-inset: #eaeaee;
+  --border-default: #e2e2e6;
+  --border-subtle: #ededf0;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b6b80;
+  --text-tertiary: #9e9eb0;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-surface: #eff6ff;
+  --success: #16a34a;
+  --success-surface: #f0fdf4;
+  --warning: #d97706;
+  --warning-surface: #fffbeb;
+  --danger: #dc2626;
+  --danger-surface: #fef2f2;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
+  --chart-grid: #e5e5ea;
+  --chart-text: #6b6b80;
+}
+
+/* ─── Dark Theme ─── */
+.dark {
+  --bg-body: #0f1117;
+  --bg-surface: #1a1c28;
+  --bg-surface-alt: #14161f;
+  --bg-surface-hover: #222436;
+  --bg-inset: #111320;
+  --border-default: #2a2d3e;
+  --border-subtle: #1f2233;
+  --text-primary: #eaeaf0;
+  --text-secondary: #9a9ab0;
+  --text-tertiary: #6a6a82;
+  --accent: #5b8def;
+  --accent-hover: #7da5ff;
+  --accent-surface: rgba(91,141,239,0.1);
+  --success: #34d676;
+  --success-surface: rgba(52,214,118,0.1);
+  --warning: #f0a830;
+  --warning-surface: rgba(240,168,48,0.1);
+  --danger: #f06060;
+  --danger-surface: rgba(240,96,96,0.1);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.5);
+  --chart-grid: #2a2d3e;
+  --chart-text: #9a9ab0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+  background: var(--bg-body);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+* {
+  border-color: var(--border-default);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
+
+/* Utility classes for theming */
+.surface { background: var(--bg-surface); }
+.surface-alt { background: var(--bg-surface-alt); }
+.surface-hover:hover { background: var(--bg-surface-hover); }
+.border-themed { border-color: var(--border-default); }
+.border-subtle { border-color: var(--border-subtle); }
+.text-1 { color: var(--text-primary); }
+.text-2 { color: var(--text-secondary); }
+.text-3 { color: var(--text-tertiary); }

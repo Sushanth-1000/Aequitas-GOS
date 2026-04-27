@@ -1,0 +1,12 @@
+scikit-learn
+shap
+pandas
+google-genai
+firebase-admin
+reportlab
+matplotlib
+google-cloud-firestore
+plotly
+fastapi
+uvicorn
+pydantic

@@ -127,7 +127,9 @@ export default function ApplicantQueue({ governanceActive, applicants, onSelectA
             <tbody>
               {filtered.map((applicant, i) => {
                 const biasCfg = biasConfig[applicant.biasStatus as keyof typeof biasConfig] || biasConfig["Non-Biased"];
-                const decCfg = decisionConfig[applicant.decisionStatus as keyof typeof decisionConfig] || decisionConfig["Needs Review"];
+                // When governance is OFF and applicant is biased, always show "Needs Review"
+                const effectiveDecisionStatus = (!governanceActive && applicant.biasStatus === "Biased") ? "Needs Review" : applicant.decisionStatus;
+                const decCfg = decisionConfig[effectiveDecisionStatus as keyof typeof decisionConfig] || decisionConfig["Needs Review"];
                 return (
                   <tr
                     key={applicant.id}

@@ -87,6 +87,20 @@ export default function AuditOverride({ applicant, governanceActive }: AuditOver
     setApproved(false);
   };
 
+  const clearSimulation = () => {
+    setIncome(applicant.income);
+    setCredit(applicant.creditScore);
+    setAge(applicant.age);
+    setDti(applicant.dti);
+    setLoan(applicant.loanAmount);
+    setApproved(false);
+    setSimScore(applicant.adjustedScore);
+    setShapData([...applicant.shapValues].sort((a, b) => Math.abs(b.value) - Math.abs(a.value)));
+    setFinalDecision(applicant.finalDecision);
+    setExplanation(applicant.explanation);
+    setCorrectionDetail(applicant.correctionDetail || null);
+  };
+
   const handleGenerateExplanation = () => {
     setIsExplaining(true);
     fetch("http://localhost:8000/api/explain", {
@@ -155,13 +169,22 @@ export default function AuditOverride({ applicant, governanceActive }: AuditOver
             <h3 className="text-sm font-semibold flex items-center" style={headingStyle}>What-If Simulator
               <HelpTooltip text="Adjust Income, Credit Score, Age, DTI, and Loan Amount using sliders to simulate how different values affect the model's prediction in real-time. Useful for understanding which changes could flip a Denied outcome to Approved." />
             </h3>
-            <button
-              onClick={resetSliders}
-              className="text-xs font-medium flex items-center gap-1 px-2 py-1 rounded-md transition-colors cursor-pointer"
-              style={{ color: "var(--text-secondary)", background: "var(--bg-surface-alt)" }}
-            >
-              <RotateCcw className="w-3 h-3" /> Reset
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={clearSimulation}
+                className="text-xs font-medium flex items-center gap-1 px-2 py-1 rounded-md transition-colors cursor-pointer border"
+                style={{ color: "var(--danger)", background: "var(--danger-surface)", borderColor: "var(--danger)" }}
+              >
+                <RotateCcw className="w-3 h-3" /> Clear Simulation
+              </button>
+              <button
+                onClick={resetSliders}
+                className="text-xs font-medium flex items-center gap-1 px-2 py-1 rounded-md transition-colors cursor-pointer"
+                style={{ color: "var(--text-secondary)", background: "var(--bg-surface-alt)" }}
+              >
+                <RotateCcw className="w-3 h-3" /> Reset
+              </button>
+            </div>
           </div>
           <div className="space-y-4">
             {[

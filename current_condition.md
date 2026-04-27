@@ -493,7 +493,6 @@ PSI > 0.2 signals significant data drift requiring model retraining.
 
 ## 12. Known Limitations & Notes
 
-- **Dockerfile** still targets Streamlit (`app.py`); needs updating for FastAPI + React deployment
 - **Gemini API key** is placeholder (`"YOUR API KEY"`); explanations fall back to static text
 - **Firestore** gracefully degrades to local JSON logging when credentials are unavailable
 - **Frontend fetches** are hardcoded to `http://localhost:8000`; no environment variable support yet

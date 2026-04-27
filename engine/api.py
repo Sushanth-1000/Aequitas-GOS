@@ -1,7 +1,11 @@
 import json
 import base64
-from fastapi import FastAPI, HTTPException
+import os
+from pathlib import Path
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import pandas as pd
 import numpy as np
@@ -374,3 +378,16 @@ def update_policy(req: PolicyUpdateRequest):
     except:
         pass
     return {"success": True, "policy": policy_state}
+
+# --- Serve React static build (Docker / production only) ---
+STATIC_DIR = Path(__file__).parent / "static"
+if STATIC_DIR.is_dir():
+    app.mount("/assets", StaticFiles(directory=str(STATIC_DIR / "assets")), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_spa(request: Request, full_path: str):
+        """Catch-all: serve index.html for SPA client-side routing."""
+        file = STATIC_DIR / full_path
+        if file.is_file():
+            return FileResponse(str(file))
+        return FileResponse(str(STATIC_DIR / "index.html"))

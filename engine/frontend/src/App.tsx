@@ -6,6 +6,7 @@ import ApplicantQueue from "./components/ApplicantQueue";
 import AuditOverride from "./components/AuditOverride";
 import SystemMetrics from "./components/SystemMetrics";
 import { type Applicant } from "./data/mockData";
+import { apiUrl } from "./api/client";
 import { useEffect } from "react";
 
 type TabId = "queue" | "audit" | "metrics";
@@ -22,17 +23,34 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>("queue");
   const [liveApplicants, setLiveApplicants] = useState<Applicant[]>([]);
   const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/applicants")
-      .then(res => res.json())
+    fetch(apiUrl("/api/applicants"))
+      .then(async (res) => {
+        const body = await res.json().catch(() => null);
+        if (!res.ok) {
+          const detail = body && typeof body === "object" && "detail" in body ? String((body as { detail: unknown }).detail) : `HTTP ${res.status}`;
+          throw new Error(detail);
+        }
+        return body;
+      })
       .then(data => {
-        setLiveApplicants(data);
+        if (!Array.isArray(data)) {
+          throw new Error("Applicants API returned invalid payload.");
+        }
+        setLoadError(null);
+        setLiveApplicants(data as Applicant[]);
         if (data.length > 0) {
-          setSelectedApplicant(data[0]);
+          setSelectedApplicant(data[0] as Applicant);
         }
       })
-      .catch(err => console.error("Failed to fetch applicants:", err));
+      .catch(err => {
+        console.error("Failed to fetch applicants:", err);
+        setLiveApplicants([]);
+        setSelectedApplicant(null);
+        setLoadError(err instanceof Error ? err.message : "Failed to load applicants.");
+      });
   }, []);
 
   const handleSelectApplicant = (applicant: Applicant) => {
@@ -104,6 +122,11 @@ export default function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-5 space-y-5">
+        {loadError && (
+          <div className="rounded-xl border px-4 py-3 text-sm" style={{ background: "var(--danger-surface)", borderColor: "var(--danger)", color: "var(--danger)" }}>
+            Failed to load applicants: {loadError}
+          </div>
+        )}
         {/* Governance Banner */}
         <GovernanceBanner isActive={governanceActive} onToggle={() => setGovernanceActive((p) => !p)} />
 

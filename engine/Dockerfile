@@ -19,6 +19,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend code
 COPY . .
 
+# Generate synthetic data and train model artifacts for runtime
+RUN python data_generator.py && python train_model.py
+
 # Copy built React assets from Stage 1
 COPY --from=frontend-build /app/frontend/dist /app/static
 

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Activity, AlertTriangle, Play, RefreshCw, TrendingUp, Clock, Save, Edit3, X, Code, FlaskConical, Layers } from "lucide-react";
+import { Activity, AlertTriangle, Play, RefreshCw, TrendingUp, Save, Edit3, X, Code, FlaskConical, Layers } from "lucide-react";
 import { driftMetrics } from "../data/mockData";
 import HelpTooltip from "./HelpTooltip";
+import { apiUrl } from "../api/client";
 
 interface SystemMetricsProps { governanceActive: boolean; }
 
-export default function SystemMetrics({ governanceActive }: SystemMetricsProps) {
+export default function SystemMetrics({ governanceActive: _governanceActive }: SystemMetricsProps) {
   const [simulating, setSimulating] = useState(false);
   const [psiVal, setPsiVal] = useState(driftMetrics.psi.value);
   const [policy, setPolicy] = useState<any>(null);
@@ -21,12 +22,12 @@ export default function SystemMetrics({ governanceActive }: SystemMetricsProps) 
   const [fairnessDim, setFairnessDim] = useState("Gender");
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/policy").then(r => r.json()).then(data => {
+    fetch(apiUrl("/api/policy")).then(r => r.json()).then(data => {
       setPolicy(data); setEditThreshold(data.threshold);
       setRulesJson(JSON.stringify(data.decision_rules, null, 2));
       setCfJson(JSON.stringify(data.counterfactual_adjustments, null, 2));
     }).catch(console.error);
-    fetch("http://localhost:8000/api/fairness").then(r => r.json()).then(setFairness).catch(console.error);
+    fetch(apiUrl("/api/fairness")).then(r => r.json()).then(setFairness).catch(console.error);
   }, []);
 
   const handleJsonChange = (val: string, which: "rules" | "cf") => {
@@ -39,7 +40,7 @@ export default function SystemMetrics({ governanceActive }: SystemMetricsProps) 
     try { parsedRules = JSON.parse(rulesJson); } catch { setJsonError("Invalid Rules JSON"); return; }
     try { parsedCf = JSON.parse(cfJson); } catch { setJsonError("Invalid CF JSON"); return; }
     setSaving(true);
-    fetch("http://localhost:8000/api/policy", {
+    fetch(apiUrl("/api/policy"), {
       method: "PUT", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ threshold: editThreshold, decision_rules: parsedRules, counterfactual_adjustments: parsedCf })
     }).then(r => r.json()).then(data => {
@@ -48,7 +49,7 @@ export default function SystemMetrics({ governanceActive }: SystemMetricsProps) 
       setCfJson(JSON.stringify(data.policy.counterfactual_adjustments, null, 2));
       setSaving(false); setEditing(false);
       setSaveMsg("Policy saved!"); setTimeout(() => setSaveMsg(""), 3000);
-      fetch("http://localhost:8000/api/fairness").then(r => r.json()).then(setFairness).catch(console.error);
+      fetch(apiUrl("/api/fairness")).then(r => r.json()).then(setFairness).catch(console.error);
     }).catch(() => setSaving(false));
   };
 

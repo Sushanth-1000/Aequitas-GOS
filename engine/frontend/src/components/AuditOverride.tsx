@@ -5,6 +5,7 @@ import {
 import { CheckCircle, FileText, RotateCcw, AlertTriangle, ArrowRight, ShieldCheck, ShieldAlert } from "lucide-react";
 import type { Applicant } from "../data/mockData";
 import HelpTooltip from "./HelpTooltip";
+import { apiUrl } from "../api/client";
 
 interface AuditOverrideProps {
   applicant: Applicant;
@@ -44,7 +45,7 @@ export default function AuditOverride({ applicant, governanceActive }: AuditOver
   // Real-time backend simulation
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      fetch("http://localhost:8000/api/simulate", {
+      fetch(apiUrl("/api/simulate"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -103,7 +104,7 @@ export default function AuditOverride({ applicant, governanceActive }: AuditOver
 
   const handleGenerateExplanation = () => {
     setIsExplaining(true);
-    fetch("http://localhost:8000/api/explain", {
+    fetch(apiUrl("/api/explain"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -126,7 +127,7 @@ export default function AuditOverride({ applicant, governanceActive }: AuditOver
   };
 
   const handleApproveOverride = () => {
-    fetch("http://localhost:8000/api/audit", {
+    fetch(apiUrl("/api/audit"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -134,7 +135,16 @@ export default function AuditOverride({ applicant, governanceActive }: AuditOver
         original_score: applicant.originalScore,
         adjusted_score: simScore,
         final_decision: finalDecision === "Approved",
-        policy_applied: governanceActive ? "Active" : "None"
+        policy_applied: governanceActive ? "Active" : "None",
+        gemini_explanation: explanation,
+        Income: income,
+        Credit_Score: credit,
+        Age: age,
+        Employment_Years: applicant.employmentYears || 0,
+        Debt_to_Income: dti,
+        Gender: applicant.gender,
+        Zip_Code: applicant.zipCode,
+        Loan_Amount: loan
       })
     })
     .then(res => res.json())

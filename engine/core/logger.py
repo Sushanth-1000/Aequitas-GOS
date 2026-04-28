@@ -12,7 +12,16 @@ from reportlab.lib import colors
 db = None
 try:
     if not firebase_admin._apps:
-        cred = credentials.ApplicationDefault()
+        sa_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+        sa_json = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
+
+        if sa_json:
+            cred = credentials.Certificate(json.loads(sa_json))
+        elif sa_path:
+            cred = credentials.Certificate(sa_path)
+        else:
+            cred = credentials.ApplicationDefault()
+
         firebase_admin.initialize_app(cred)
     db = firestore.client()
 except Exception as e:

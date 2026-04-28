@@ -23,8 +23,11 @@ from core.bias_corrector import cafp_correct
 
 app = FastAPI(title="Aequitas-Gov API")
 
+cors_origins = [origin.strip() for origin in os.getenv("CORS_ORIGINS", "*").split(",") if origin.strip()]
+
 app.add_middleware(
-    CORSMiddleware, allow_origins=["*"], allow_credentials=True,
+    CORSMiddleware, allow_origins=cors_origins,
+    allow_credentials="*" not in cors_origins,
     allow_methods=["*"], allow_headers=["*"],
 )
 
@@ -115,6 +118,15 @@ class ExplainRequest(BaseModel):
 
 class AuditRequest(BaseModel):
     applicant_id: str; original_score: float; adjusted_score: float; final_decision: bool; policy_applied: str
+    gemini_explanation: Optional[str] = None
+    Income: Optional[float] = None
+    Credit_Score: Optional[int] = None
+    Age: Optional[int] = None
+    Employment_Years: Optional[float] = None
+    Debt_to_Income: Optional[float] = None
+    Gender: Optional[str] = None
+    Zip_Code: Optional[str] = None
+    Loan_Amount: Optional[float] = None
 
 class PolicyUpdateRequest(BaseModel):
     threshold: Optional[float] = None
@@ -336,23 +348,59 @@ def get_fairness():
 
 @app.post("/api/explain")
 def explain(req: ExplainRequest):
-    ctx = {
-        "applicant_id": req.applicant_id, "original_score": round(req.original_score, 2),
-        "policy_rule": req.policy_rule, "final_decision": req.final_decision, "top_feature": req.top_feature
-    }
-    exp_json = generate_explanation(ctx)
     try:
-        exp_dict = json.loads(exp_json)
-        return {"explanation": exp_dict.get('explanation', exp_json)}
-    except:
-        return {"explanation": exp_json}
+        print(f"Explain request received: {req}")
+        
+        ctx = {
+            "applicant_id": req.applicant_id, "original_score": round(req.original_score, 2),
+            "policy_rule": req.policy_rule, "final_decision": req.final_decision, "top_feature": req.top_feature
+        }
+        print(f"Context for explanation: {ctx}")
+        
+        exp_json = generate_explanation(ctx)
+        print(f"Raw explanation response: {exp_json}")
+        
+        try:
+            exp_dict = json.loads(exp_json)
+            return {"explanation": exp_dict.get('explanation', exp_json)}
+        except:
+            # Gemini may prepend text like "Here is the JSON requested"
+            # and then include a JSON object. Try to recover the object.
+            start = exp_json.find("{")
+            end = exp_json.rfind("}")
+            if start != -1 and end != -1 and end > start:
+                try:
+                    recovered = json.loads(exp_json[start:end + 1])
+                    return {"explanation": recovered.get("explanation", exp_json)}
+                except:
+                    pass
+            return {"explanation": exp_json}
+            
+    except Exception as e:
+        print(f"Error in explain endpoint: {str(e)}")
+        print(f"Exception type: {type(e).__name__}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        return {"explanation": f"Error generating explanation: {str(e)}"}
 
 @app.post("/api/audit")
 async def audit(req: AuditRequest):
     record = {
-        "applicant_id": req.applicant_id, "original_score": req.original_score,
+        "applicant_id": req.applicant_id,
+        "Applicant_ID": req.applicant_id,
+        "original_score": req.original_score,
         "adjusted_score": req.adjusted_score, "final_decision": req.final_decision,
-        "policy_applied": req.policy_applied, "timestamp": pd.Timestamp.now().isoformat()
+        "policy_applied": req.policy_applied,
+        "gemini_explanation": req.gemini_explanation,
+        "Income": req.Income,
+        "Credit_Score": req.Credit_Score,
+        "Age": req.Age,
+        "Employment_Years": req.Employment_Years,
+        "Debt_to_Income": req.Debt_to_Income,
+        "Gender": req.Gender,
+        "Zip_Code": req.Zip_Code,
+        "Loan_Amount": req.Loan_Amount,
+        "timestamp": pd.Timestamp.now().isoformat()
     }
     await log_to_firestore(record)
     b64_pdf = generate_pdf_report(record)

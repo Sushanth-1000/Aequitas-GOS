@@ -21,7 +21,7 @@ export interface Applicant {
   age: number;
   dti: number;
   loanAmount: number;
-  employmentYears: number;
+  employmentYears?: number;
   biasStatus: "Biased" | "Non-Biased";
   decisionStatus: "Approved" | "Auto-Corrected" | "Needs Review";
   originalScore: number;
